@@ -26,10 +26,10 @@ OBJS_CPP = $(patsubst %.cpp,%.o, $(SRCS_CPP))
 
 release: $(TARGET)
 clean:
-	rm *.o $(TARGET) -fv
+	rm *.o *.txt $(TARGET) -fv
 
 $(TARGET):$(OBJS_C) $(OBJS_CPP)
-	$(CPP) -o $@ $(LFLAGS) $^
+	$(CPP) -g -o $@ $(LFLAGS) $^
 
 %.o:%.c
 	$(CC) -c $^ -o $@ $(CFLAGS)
