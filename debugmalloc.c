@@ -19,6 +19,8 @@ extern "C" {
 
 void* MALLOC_DEBUG (int size, const char *szFile, int line, const char *szFunction);
 
+void* CALLOC_DEBUG (int num, int size, const char *szFile, int line, const char *szFunction);
+
 void FREE_DEBUG (void *p, const char *szFile, int line, const char *szFunction);
 
 void MALLOC_DUMP();
@@ -105,6 +107,37 @@ void* MALLOC_DEBUG (int size, const char *szFile, int line, const char *szFuncti
     info.line = line;
     strncpy(info.func, szFunction, FUNC_LEN-1);
     info.size = size;
+    info.pointer = p;
+
+    pthread_mutex_lock (& s_mutex_malloc_map);
+    // if (s_malloc_map.find (p) != s_malloc_map.cend())
+    // {
+    //     xdebug ("error, same pointer: [%p]\n", p);
+    //     crash ();
+    // }
+    insertNode(&info);
+    //s_malloc_map[p] = info;
+
+    pthread_mutex_unlock (& s_mutex_malloc_map);
+
+    printf ("MLOC_DEBUG p=%p size=%d at [%s %d %s]\n", p, size, szFile, line, szFunction);
+    return p;
+}
+
+void* CALLOC_DEBUG (int num, int size, const char *szFile, int line, const char *szFunction)
+{
+    void *p = calloc (num, size);
+    if (p == NULL) {
+        printf("malloc fail, file: %s, func: %s, line: %d", szFile, szFunction, line);
+        //kill(getpid(), SIGTERM);
+        return NULL;
+    }
+    //memset(p, 0, size);
+    MALLOC_INFO info;
+    strncpy(info.file, szFile, FILE_LEN-1);
+    info.line = line;
+    strncpy(info.func, szFunction, FUNC_LEN-1);
+    info.size = num * size;
     info.pointer = p;
 
     pthread_mutex_lock (& s_mutex_malloc_map);

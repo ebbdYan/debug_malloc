@@ -7,6 +7,11 @@
 #endif 
 #define malloc(size) MALLOC_DEBUG(size, __FILE__,__LINE__,__FUNCTION__)
 
+#ifdef calloc
+#undef calloc
+#endif 
+#define calloc(num, size) CALLOC_DEBUG(num, size, __FILE__,__LINE__,__FUNCTION__)
+
 #ifdef free
 #undef free
 #endif 
@@ -16,6 +21,8 @@
 extern "C" {
 #endif 
 void* MALLOC_DEBUG (int size, const char *szFile, int line, const char *szFunction);
+
+void* CALLOC_DEBUG (int num, int size, const char *szFile, int line, const char *szFunction);
 
 void FREE_DEBUG (void *p, const char *szFile, int line, const char *szFunction);
 
